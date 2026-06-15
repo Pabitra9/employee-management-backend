@@ -58,4 +58,31 @@ const updateProfileValidator = [
     .withMessage('Password must be at least 6 characters'),
 ];
 
-module.exports = { registerValidator, loginValidator, updateProfileValidator };
+/** Rules for POST /api/auth/forgot-password. */
+const forgotPasswordValidator = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('A valid email is required')
+    .toLowerCase(),
+];
+
+/** Rules for POST /api/auth/reset-password. */
+const resetPasswordValidator = [
+  body('token').trim().notEmpty().withMessage('Reset token is required'),
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required')
+    .isLength({ min: 6 })
+    .withMessage('Password must be at least 6 characters'),
+];
+
+module.exports = {
+  registerValidator,
+  loginValidator,
+  updateProfileValidator,
+  forgotPasswordValidator,
+  resetPasswordValidator,
+};

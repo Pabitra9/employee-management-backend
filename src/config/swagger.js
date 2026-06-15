@@ -200,6 +200,57 @@ const swaggerSpec = {
         },
       },
     },
+    '/auth/forgot-password': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Request a password-reset link',
+        description:
+          'Always returns 200 (to avoid email enumeration). In non-production the ' +
+          'reset token/URL is included in the response for testing.',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['email'],
+                properties: { email: { type: 'string', example: 'admin@example.com' } },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Reset link sent (if the account exists)', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+          422: { $ref: '#/components/responses/ValidationError' },
+        },
+      },
+    },
+    '/auth/reset-password': {
+      post: {
+        tags: ['Auth'],
+        summary: 'Reset password using a token',
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['token', 'password'],
+                properties: {
+                  token: { type: 'string', example: 'a1b2c3d4...' },
+                  password: { type: 'string', format: 'password', example: 'NewSecret@123' },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: { description: 'Password reset', content: { 'application/json': { schema: { $ref: '#/components/schemas/SuccessResponse' } } } },
+          400: { description: 'Invalid or expired token', content: { 'application/json': { schema: { $ref: '#/components/schemas/ErrorResponse' } } } },
+          422: { $ref: '#/components/responses/ValidationError' },
+        },
+      },
+    },
     '/auth/me': {
       get: {
         tags: ['Auth'],

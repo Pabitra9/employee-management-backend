@@ -1,8 +1,11 @@
 'use strict';
 
+const crypto = require('crypto');
 const User = require('../models/user.model');
 const ApiError = require('../utils/ApiError');
 const tokenService = require('./token.service');
+const emailService = require('./email.service');
+const env = require('../config/env');
 
 /**
  * Build the JWT payload from a user document. Single source of truth so the
@@ -91,4 +94,65 @@ const updateProfile = async (userId, { name, password }) => {
   return user.toJSON();
 };
 
-module.exports = { register, login, getProfile, updateProfile };
+/**
+ * Start the forgot-password flow.
+ *
+ * Generates a reset token, stores its hash, and emails a reset link. To prevent
+ * email enumeration, the caller should return the SAME response whether or not
+ * the email exists — this function simply returns nulls for unknown emails.
+ *
+ * @param {string} email
+ * @returns {Promise<{ resetToken: string|null, resetUrl: string|null, emailDelivered: boolean }>}
+ */
+const forgotPassword = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    return { resetToken: null, resetUrl: null, emailDelivered: false };
+  }
+
+  const resetToken = user.createPasswordResetToken();
+  // Skip full-document validation: password isn't loaded here (select:false).
+  await user.save({ validateBeforeSave: false });
+
+  const resetUrl = `${env.frontendUrl}/reset-password/${resetToken}`;
+  const { delivered } = await emailService.sendPasswordResetEmail(user.email, resetUrl);
+
+  return { resetToken, resetUrl, emailDelivered: delivered };
+};
+
+/**
+ * Complete the reset: validate the token and set a new password.
+ *
+ * @param {string} rawToken     The token from the reset link.
+ * @param {string} newPassword
+ * @returns {Promise<object>} the updated user (sanitized)
+ * @throws {ApiError} 400 if the token is invalid or expired.
+ */
+const resetPassword = async (rawToken, newPassword) => {
+  const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  }).select('+passwordResetToken +passwordResetExpires');
+
+  if (!user) {
+    throw new ApiError(400, 'Password reset token is invalid or has expired');
+  }
+
+  user.password = newPassword; // re-hashed by the pre-save hook
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+
+  return user.toJSON();
+};
+
+module.exports = {
+  register,
+  login,
+  getProfile,
+  updateProfile,
+  forgotPassword,
+  resetPassword,
+};

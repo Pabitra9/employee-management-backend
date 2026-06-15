@@ -15,12 +15,14 @@ looks, and **which role sees what**. This is intentionally low-fidelity — it d
 | # | Screen | Route | Who can see it | Backend endpoint(s) |
 |---|--------|-------|----------------|---------------------|
 | 1 | Login | `/login` | Public | `POST /auth/login` |
-| 2 | Dashboard | `/dashboard` | Admin + Employee (different content) | `GET /auth/me`, `GET /employees` (admin) |
-| 3 | My Profile | `/profile` | Admin + Employee | `GET /auth/me`, `PUT /auth/me` |
-| 4 | Employees List | `/employees` | **Admin only** | `GET /employees` |
-| 5 | Employee Details | `/employees/:id` | **Admin only** | `GET /employees/:id` |
-| 6 | Add Employee | `/employees/new` | **Admin only** | `POST /employees` |
-| 7 | Edit Employee | `/employees/:id/edit` | **Admin only** | `PUT /employees/:id` |
+| 2 | Forgot Password | `/forgot-password` | Public | `POST /auth/forgot-password` |
+| 3 | Reset Password | `/reset-password/:token` | Public (needs valid token) | `POST /auth/reset-password` |
+| 4 | Dashboard | `/dashboard` | Admin + Employee (different content) | `GET /auth/me`, `GET /employees` (admin) |
+| 5 | My Profile | `/profile` | Admin + Employee | `GET /auth/me`, `PUT /auth/me` |
+| 6 | Employees List | `/employees` | **Admin only** | `GET /employees` |
+| 7 | Employee Details | `/employees/:id` | **Admin only** | `GET /employees/:id` |
+| 8 | Add Employee | `/employees/new` | **Admin only** | `POST /employees` |
+| 9 | Edit Employee | `/employees/:id/edit` | **Admin only** | `PUT /employees/:id` |
 | — | Delete employee | (action, not a page) | **Admin only** | `DELETE /employees/:id` |
 
 ---
@@ -71,6 +73,7 @@ The sidebar items shown depend on the logged-in user's `role`.
 |                                           |
 |             [      Log In      ]          |
 |                                           |
+|                      Forgot password? ──► |   (link to /forgot-password)
 |   (error message shows here on 401)       |
 +------------------------------------------+
 ```
@@ -78,7 +81,53 @@ On success: store JWT → redirect to `/dashboard`.
 
 ---
 
-### 3.2 Dashboard — `/dashboard`
+### 3.2 Forgot Password — `/forgot-password` (public)
+
+```
++------------------------------------------+
+|          Forgot your password?            |
+|   Enter your email and we'll send a       |
+|   reset link.                             |
+|                                           |
+|   Email   [___________________________]   |
+|                                           |
+|           [   Send reset link   ]         |
+|                                           |
+|   ✓ "If that email exists, a link has     |
+|      been sent."  (always shown)          |
+|                                  ◄ Back to login |
++------------------------------------------+
+```
+Calls `POST /auth/forgot-password`. Always show the same confirmation (don't reveal
+whether the email exists). The link in the email points to `/reset-password/:token`.
+
+---
+
+### 3.3 Reset Password — `/reset-password/:token` (public)
+
+```
++------------------------------------------+
+|          Set a new password               |
+|                                           |
+|   New Password     [__________________]   |
+|   Confirm Password [__________________]   |
+|                                           |
+|           [   Reset password   ]          |
+|                                           |
+|   (error if token invalid/expired → 400)  |
++------------------------------------------+
+```
+The page reads `:token` from its own URL and sends `{ token, password }` to
+`POST /auth/reset-password`. On success → toast "Password reset" → redirect to `/login`.
+Token is valid 15 minutes and single-use.
+
+**Full flow (login → forgot → reset → login):**
+
+![Password reset flow](docs/password-reset-flow.svg)
+
+---
+
+### 3.4 Dashboard — `/dashboard`
 
 **Admin sees stats + quick table:**
 ```
@@ -112,7 +161,7 @@ On success: store JWT → redirect to `/dashboard`.
 
 ---
 
-### 3.3 My Profile — `/profile` (both roles)
+### 3.5 My Profile — `/profile` (both roles)
 
 ```
 +--------------------------------------------------+
@@ -132,7 +181,7 @@ Maps to `PUT /auth/me` (only `name` and `password` are editable; email/role are 
 
 ---
 
-### 3.4 Employees List — `/employees` (admin only)
+### 3.6 Employees List — `/employees` (admin only)
 
 ```
 +-------------------------------------------------------------+
@@ -156,7 +205,7 @@ Maps to `PUT /auth/me` (only `name` and `password` are editable; email/role are 
 
 ---
 
-### 3.5 Add / Edit Employee — `/employees/new`, `/employees/:id/edit` (admin only)
+### 3.7 Add / Edit Employee — `/employees/new`, `/employees/:id/edit` (admin only)
 
 ```
 +-------------------------------------------------------------+
@@ -176,7 +225,7 @@ Maps to `PUT /auth/me` (only `name` and `password` are editable; email/role are 
 
 ---
 
-### 3.6 Employee Details — `/employees/:id` (admin only)
+### 3.8 Employee Details — `/employees/:id` (admin only)
 
 ```
 +--------------------------------------------------+
@@ -200,6 +249,7 @@ Maps to `PUT /auth/me` (only `name` and `password` are editable; email/role are 
 | UI element / action | Admin | Employee | If employee tries anyway |
 |---------------------|:-----:|:--------:|--------------------------|
 | Login               | ✅ | ✅ | — |
+| Forgot / Reset password | ✅ public | ✅ public | — (no login required) |
 | Sidebar → Dashboard | ✅ | ✅ | — |
 | Sidebar → Employees | ✅ | ❌ | item hidden |
 | Sidebar → My Profile| ✅ | ✅ | — |
@@ -220,6 +270,8 @@ Maps to `PUT /auth/me` (only `name` and `password` are editable; email/role are 
 ```
 <Routes>
   /login                         → LoginPage              (public)
+  /forgot-password               → ForgotPasswordPage     (public)
+  /reset-password/:token         → ResetPasswordPage      (public)
 
   <ProtectedRoute>               (requires a valid token)
     /dashboard                   → DashboardPage          (admin + employee)
@@ -267,6 +319,8 @@ src/
 │   └── ConfirmDialog.jsx # delete confirmation
 └── pages/
     ├── LoginPage.jsx
+    ├── ForgotPasswordPage.jsx
+    ├── ResetPasswordPage.jsx
     ├── DashboardPage.jsx
     ├── ProfilePage.jsx
     ├── EmployeeListPage.jsx

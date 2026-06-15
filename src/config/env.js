@@ -37,6 +37,20 @@ const env = {
   // CORS: "*" (allow all) or a comma-separated allow-list of origins.
   clientUrl: process.env.CLIENT_URL || '*',
 
+  // Base URL of the React app — used to build password-reset links.
+  frontendUrl: process.env.FRONTEND_URL || 'http://localhost:5173',
+
+  // SMTP (optional). If host+user are unset, reset emails are logged to the
+  // console instead of sent (handy for local development).
+  smtp: {
+    host: process.env.SMTP_HOST || '',
+    port: parseInt(process.env.SMTP_PORT, 10) || 587,
+    secure: process.env.SMTP_SECURE === 'true',
+    user: process.env.SMTP_USER || '',
+    pass: process.env.SMTP_PASS || '',
+    from: process.env.SMTP_FROM || 'Employee Mgmt <no-reply@example.com>',
+  },
+
   seed: {
     adminEmail: process.env.SEED_ADMIN_EMAIL || 'admin@example.com',
     adminPassword: process.env.SEED_ADMIN_PASSWORD || 'Admin@123',

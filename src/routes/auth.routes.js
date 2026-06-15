@@ -10,6 +10,8 @@ const {
   registerValidator,
   loginValidator,
   updateProfileValidator,
+  forgotPasswordValidator,
+  resetPasswordValidator,
 } = require('../validators/auth.validator');
 
 const router = express.Router();
@@ -37,6 +39,21 @@ const authLimiter = rateLimit({
  */
 router.post('/register', authLimiter, registerValidator, validate, authController.register);
 router.post('/login', authLimiter, loginValidator, validate, authController.login);
+
+router.post(
+  '/forgot-password',
+  authLimiter,
+  forgotPasswordValidator,
+  validate,
+  authController.forgotPassword
+);
+router.post(
+  '/reset-password',
+  authLimiter,
+  resetPasswordValidator,
+  validate,
+  authController.resetPassword
+);
 
 router.get('/me', authenticate, authController.getProfile);
 router.put('/me', authenticate, updateProfileValidator, validate, authController.updateProfile);

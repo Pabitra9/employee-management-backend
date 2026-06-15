@@ -13,21 +13,23 @@ and what you get back. Hand this to anyone integrating with the backend (e.g. th
 
 ## How many APIs are there?
 
-**10 core endpoints** (+ 1 health check = 11 total):
+**12 core endpoints** (+ 1 health check = 13 total):
 
 | # | Method | Endpoint | Auth | Role | Description |
 |---|--------|----------|------|------|-------------|
-| 1 | POST   | `/auth/register`   | ❌ Public | — | Create a user account |
-| 2 | POST   | `/auth/login`      | ❌ Public | — | Log in, get a JWT |
-| 3 | GET    | `/auth/me`         | ✅ Token  | any | Get your own profile |
-| 4 | PUT    | `/auth/me`         | ✅ Token  | any | Update your own name/password |
-| 5 | POST   | `/auth/logout`     | ✅ Token  | any | Log out (stateless) |
-| 6 | GET    | `/employees`       | ✅ Token  | admin | List employees (paginated) |
-| 7 | GET    | `/employees/:id`   | ✅ Token  | admin | Get one employee |
-| 8 | POST   | `/employees`       | ✅ Token  | admin | Create an employee |
-| 9 | PUT    | `/employees/:id`   | ✅ Token  | admin | Update an employee |
-| 10| DELETE | `/employees/:id`   | ✅ Token  | admin | Delete an employee |
-| — | GET    | `/health`          | ❌ Public | — | Health check |
+| 1 | POST   | `/auth/register`        | ❌ Public | — | Create a user account |
+| 2 | POST   | `/auth/login`           | ❌ Public | — | Log in, get a JWT |
+| 3 | POST   | `/auth/forgot-password` | ❌ Public | — | Request a password-reset link |
+| 4 | POST   | `/auth/reset-password`  | ❌ Public | — | Set a new password using a token |
+| 5 | GET    | `/auth/me`              | ✅ Token  | any | Get your own profile |
+| 6 | PUT    | `/auth/me`              | ✅ Token  | any | Update your own name/password |
+| 7 | POST   | `/auth/logout`          | ✅ Token  | any | Log out (stateless) |
+| 8 | GET    | `/employees`            | ✅ Token  | admin | List employees (paginated) |
+| 9 | GET    | `/employees/:id`        | ✅ Token  | admin | Get one employee |
+| 10| POST   | `/employees`            | ✅ Token  | admin | Create an employee |
+| 11| PUT    | `/employees/:id`        | ✅ Token  | admin | Update an employee |
+| 12| DELETE | `/employees/:id`        | ✅ Token  | admin | Delete an employee |
+| — | GET    | `/health`               | ❌ Public | — | Health check |
 
 ---
 
@@ -175,7 +177,86 @@ curl -X POST http://localhost:5050/api/auth/login \
 
 ---
 
-## 3. Get current profile — `GET /auth/me`
+## 3. Forgot password — `POST /auth/forgot-password`
+
+Public. Starts the reset flow. **Always returns 200** with the same message whether or
+not the email exists (prevents attackers from discovering which emails are registered).
+
+In **development** (or when SMTP is not configured), the reset token + URL are returned in
+`data` so you can test without email. In **production** they are emailed, not returned.
+
+**Body parameters**
+
+| Field   | Type   | Required |
+|---------|--------|----------|
+| `email` | string | ✅ |
+
+**Request**
+```json
+{ "email": "admin@example.com" }
+```
+
+**Success — 200** (dev response includes the token; production omits it)
+```json
+{
+  "success": true,
+  "message": "If an account with that email exists, a password reset link has been sent.",
+  "data": {
+    "resetToken": "a1b2c3...64hex",
+    "resetUrl": "http://localhost:5173/reset-password/a1b2c3...64hex",
+    "note": "Dev only: in production this is emailed, not returned."
+  }
+}
+```
+
+**Errors:** `422` validation failed.
+
+```bash
+curl -X POST http://localhost:5050/api/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com"}'
+```
+
+---
+
+## 4. Reset password — `POST /auth/reset-password`
+
+Public. Sets a new password using a valid, unexpired token (valid for **15 minutes**,
+**single-use**). The email link points at the frontend route `/reset-password/:token`;
+the React page reads that `:token` and sends it in the body.
+
+**Body parameters**
+
+| Field      | Type   | Required | Rules |
+|------------|--------|----------|-------|
+| `token`    | string | ✅ | the token from the reset link |
+| `password` | string | ✅ | min 6 characters (the new password) |
+
+**Request**
+```json
+{ "token": "a1b2c3...64hex", "password": "NewSecret@123" }
+```
+
+**Success — 200**
+```json
+{
+  "success": true,
+  "message": "Password has been reset successfully. Please log in.",
+  "data": { "user": { "_id": "665f...", "email": "admin@example.com", "role": "admin" } }
+}
+```
+
+**Errors:** `400` token invalid or expired (also if already used) · `422` validation failed.
+
+```bash
+curl -X POST http://localhost:5050/api/auth/reset-password \
+  -H "Content-Type: application/json" \
+  -d '{"token":"<token-from-forgot-password>","password":"NewSecret@123"}'
+```
+
+---
+
+## 5. Get current profile — `GET /auth/me`
 
 Requires a token (any role). No body.
 
@@ -198,7 +279,7 @@ curl http://localhost:5050/api/auth/me -H "Authorization: Bearer <token>"
 
 ---
 
-## 4. Update own profile — `PUT /auth/me`
+## 6. Update own profile — `PUT /auth/me`
 
 Requires a token (any role). Update your own name and/or password. (Email and role cannot be changed here.)
 
@@ -220,7 +301,7 @@ Requires a token (any role). Update your own name and/or password. (Email and ro
 
 ---
 
-## 5. Logout — `POST /auth/logout`
+## 7. Logout — `POST /auth/logout`
 
 Requires a token. Stateless — the client should discard the token. No body.
 

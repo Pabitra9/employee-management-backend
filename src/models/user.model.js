@@ -1,10 +1,14 @@
 'use strict';
 
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 /** Allowed roles for role-based access control. */
 const ROLES = ['admin', 'employee'];
+
+/** How long a password-reset token stays valid. */
+const RESET_TOKEN_EXPIRY_MS = 15 * 60 * 1000; // 15 minutes
 
 const userSchema = new mongoose.Schema(
   {
@@ -34,12 +38,17 @@ const userSchema = new mongoose.Schema(
       enum: { values: ROLES, message: 'Role must be either admin or employee' },
       default: 'employee',
     },
+    // Password reset: only the HASH of the token is stored (never the raw token).
+    passwordResetToken: { type: String, select: false },
+    passwordResetExpires: { type: Date, select: false },
   },
   {
     timestamps: true, // adds createdAt / updatedAt
     toJSON: {
       transform(doc, ret) {
         delete ret.password;
+        delete ret.passwordResetToken;
+        delete ret.passwordResetExpires;
         delete ret.__v;
         return ret;
       },
@@ -69,6 +78,22 @@ userSchema.pre('save', async function hashPassword(next) {
  */
 userSchema.methods.comparePassword = function comparePassword(candidate) {
   return bcrypt.compare(candidate, this.password);
+};
+
+/**
+ * Generate a password-reset token.
+ *
+ * Returns the RAW token (to be emailed to the user) while storing only its
+ * SHA-256 hash on the document — so a leaked database cannot be used to reset
+ * passwords. Caller must `save()` afterwards.
+ *
+ * @returns {string} the raw, un-hashed reset token
+ */
+userSchema.methods.createPasswordResetToken = function createPasswordResetToken() {
+  const rawToken = crypto.randomBytes(32).toString('hex');
+  this.passwordResetToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+  this.passwordResetExpires = new Date(Date.now() + RESET_TOKEN_EXPIRY_MS);
+  return rawToken;
 };
 
 const User = mongoose.model('User', userSchema);
