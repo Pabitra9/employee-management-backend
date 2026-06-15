@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+# NOTE: package-lock.json IS committed on purpose so everyone (e.g. the intern)
+# installs the exact same dependency versions. Only ignore other PMs' lockfiles.
+yarn.lock
+pnpm-lock.yaml
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS / Editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Coverage / build
+coverage/
+dist/
+build/

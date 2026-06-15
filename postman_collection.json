@@ -1,0 +1,207 @@
+{
+  "info": {
+    "name": "Employee Management API",
+    "_postman_id": "b1e7a4c2-1f2d-4c3a-9f7e-0a1b2c3d4e5f",
+    "description": "Production-ready Employee Management backend (Auth + RBAC + Employee CRUD).\n\nQuick start:\n1. Run **Auth > Login (Admin)** — the JWT is saved automatically to the `token` variable.\n2. Run any **Employees** request — they use `Bearer {{token}}`.\n\nVariables: `baseUrl`, `token`, `employeeId`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5050/api", "type": "string" },
+    { "key": "token", "value": "", "type": "string" },
+    { "key": "employeeId", "value": "", "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"password\": \"Secret@123\",\n  \"role\": \"employee\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "  console.log('Saved token to collection variable.');",
+                  "}",
+                  "pm.test('Login succeeded', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"Admin@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login (Employee)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.token) {",
+                  "  pm.collectionVariables.set('token', res.data.token);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"employee@example.com\",\n  \"password\": \"Employee@123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Profile (me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        },
+        {
+          "name": "Update Profile (me)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Name\"\n}" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Employees",
+      "item": [
+        {
+          "name": "Create Employee",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.data && res.data.employee && res.data.employee._id) {",
+                  "  pm.collectionVariables.set('employeeId', res.data.employee._id);",
+                  "  console.log('Saved employeeId:', res.data.employee._id);",
+                  "}",
+                  "pm.test('Created', () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Sam\",\n  \"lastName\": \"Taylor\",\n  \"email\": \"sam.taylor@example.com\",\n  \"phone\": \"+1-202-555-0100\",\n  \"designation\": \"QA Engineer\",\n  \"department\": \"Engineering\",\n  \"salary\": 70000,\n  \"status\": \"active\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get All Employees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/employees?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["employees"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "department", "value": "", "disabled": true },
+                { "key": "status", "value": "active", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Employee By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/employees/{{employeeId}}", "host": ["{{baseUrl}}"], "path": ["employees", "{{employeeId}}"] }
+          }
+        },
+        {
+          "name": "Update Employee",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/employees/{{employeeId}}", "host": ["{{baseUrl}}"], "path": ["employees", "{{employeeId}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"designation\": \"Senior QA Engineer\",\n  \"salary\": 80000,\n  \"status\": \"active\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete Employee",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/employees/{{employeeId}}", "host": ["{{baseUrl}}"], "path": ["employees", "{{employeeId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "request": {
+        "auth": { "type": "noauth" },
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+      }
+    }
+  ]
+}
