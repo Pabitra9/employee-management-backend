@@ -1,0 +1,120 @@
+<svg viewBox="0 0 1040 760" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="1040" height="760" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="520" y="30" text-anchor="middle" font-size="22" font-weight="bold" fill="#0f172a">Employee Management — Low-Fidelity UI Wireframe</text>
+  <text x="520" y="52" text-anchor="middle" font-size="13" fill="#64748b">Same app, different layout per role. Blue = admin-only. Red = hidden / blocked.</text>
+
+  <!-- ===================== LOGIN ===================== -->
+  <text x="520" y="84" text-anchor="middle" font-size="12" font-weight="bold" fill="#2563eb">LOGIN  (public — everyone)</text>
+  <rect x="400" y="92" width="240" height="150" rx="8" fill="#f8fafc" stroke="#94a3b8"/>
+  <circle cx="520" cy="116" r="11" fill="#cbd5e1"/>
+  <text x="520" y="146" text-anchor="middle" font-size="12" font-weight="bold" fill="#334155">Employee Management</text>
+  <text x="416" y="166" font-size="9" fill="#64748b">Email</text>
+  <rect x="416" y="170" width="208" height="16" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="416" y="200" font-size="9" fill="#64748b">Password</text>
+  <rect x="416" y="204" width="208" height="16" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+  <!-- login button -->
+  <rect x="416" y="224" width="208" height="14" rx="3" fill="#2563eb"/>
+  <text x="520" y="234" text-anchor="middle" font-size="9" font-weight="bold" fill="#ffffff">Log In</text>
+
+  <text x="520" y="262" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f172a">AFTER LOGIN — the app shell (topbar + sidebar + content) adapts to the role</text>
+
+  <!-- ===================== ADMIN SHELL ===================== -->
+  <text x="272" y="292" text-anchor="middle" font-size="13" font-weight="bold" fill="#1d4ed8">ADMIN role</text>
+  <rect x="24" y="300" width="496" height="438" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+  <!-- topbar -->
+  <rect x="24" y="300" width="496" height="34" rx="8" fill="#0f172a"/>
+  <rect x="24" y="320" width="496" height="14" fill="#0f172a"/>
+  <text x="40" y="322" font-size="11" font-weight="bold" fill="#ffffff">☰  Employee Mgmt</text>
+  <text x="504" y="322" text-anchor="end" font-size="10" fill="#cbd5e1">Admin User ▾   Logout</text>
+  <!-- sidebar -->
+  <rect x="24" y="334" width="130" height="404" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <rect x="34" y="346" width="110" height="24" rx="4" fill="#e2e8f0"/>
+  <text x="44" y="362" font-size="11" fill="#334155">Dashboard</text>
+  <rect x="34" y="376" width="110" height="24" rx="4" fill="#2563eb"/>
+  <text x="44" y="392" font-size="11" font-weight="bold" fill="#ffffff">Employees</text>
+  <rect x="34" y="406" width="110" height="24" rx="4" fill="#e2e8f0"/>
+  <text x="44" y="422" font-size="11" fill="#334155">My Profile</text>
+  <rect x="34" y="702" width="110" height="24" rx="4" fill="#fee2e2"/>
+  <text x="44" y="718" font-size="11" fill="#b91c1c">Logout</text>
+  <!-- content: employee table -->
+  <text x="166" y="356" font-size="13" font-weight="bold" fill="#0f172a">Employees</text>
+  <rect x="404" y="344" width="106" height="20" rx="4" fill="#2563eb"/>
+  <text x="457" y="358" text-anchor="middle" font-size="10" fill="#ffffff">+ Add Employee</text>
+  <!-- filters -->
+  <rect x="166" y="372" width="150" height="16" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="172" y="384" font-size="9" fill="#94a3b8">Search…</text>
+  <rect x="324" y="372" width="86" height="16" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="330" y="384" font-size="9" fill="#94a3b8">Dept ▾</text>
+  <rect x="418" y="372" width="92" height="16" rx="3" fill="#ffffff" stroke="#cbd5e1"/>
+  <text x="424" y="384" font-size="9" fill="#94a3b8">Status ▾</text>
+  <!-- table header -->
+  <rect x="166" y="398" width="344" height="22" fill="#e2e8f0"/>
+  <text x="174" y="413" font-size="9" font-weight="bold" fill="#334155">Name</text>
+  <text x="280" y="413" font-size="9" font-weight="bold" fill="#334155">Dept</text>
+  <text x="350" y="413" font-size="9" font-weight="bold" fill="#334155">Salary</text>
+  <text x="408" y="413" font-size="9" font-weight="bold" fill="#334155">Status</text>
+  <text x="462" y="413" font-size="9" font-weight="bold" fill="#334155">Actions</text>
+  <!-- rows -->
+  <g font-size="9" fill="#475569">
+    <rect x="166" y="420" width="344" height="22" fill="#ffffff"/>
+    <text x="174" y="434">Jane Doe</text><text x="280" y="434">Eng</text><text x="350" y="434">85,000</text>
+    <rect x="406" y="426" width="40" height="11" rx="5" fill="#dcfce7"/><text x="412" y="434" fill="#166534">active</text>
+    <text x="462" y="434" font-size="11">✎ 🗑 👁</text>
+    <rect x="166" y="442" width="344" height="22" fill="#f8fafc"/>
+    <text x="174" y="456">John Smith</text><text x="280" y="456">Prod</text><text x="350" y="456">95,000</text>
+    <rect x="406" y="448" width="40" height="11" rx="5" fill="#dcfce7"/><text x="412" y="456" fill="#166534">active</text>
+    <text x="462" y="456" font-size="11">✎ 🗑 👁</text>
+    <rect x="166" y="464" width="344" height="22" fill="#ffffff"/>
+    <text x="174" y="478">Aisha Khan</text><text x="280" y="478">HR</text><text x="350" y="478">60,000</text>
+    <rect x="406" y="470" width="46" height="11" rx="5" fill="#fee2e2"/><text x="412" y="478" fill="#991b1b">inactive</text>
+    <text x="462" y="478" font-size="11">✎ 🗑 👁</text>
+    <rect x="166" y="486" width="344" height="22" fill="#f8fafc"/>
+    <text x="174" y="500">Sam Taylor</text><text x="280" y="500">Eng</text><text x="350" y="500">70,000</text>
+    <rect x="406" y="492" width="40" height="11" rx="5" fill="#dcfce7"/><text x="412" y="500" fill="#166534">active</text>
+    <text x="462" y="500" font-size="11">✎ 🗑 👁</text>
+  </g>
+  <text x="166" y="524" font-size="10" fill="#64748b">◀  Page 1 of 3  ▶</text>
+  <text x="166" y="556" font-size="9" fill="#1d4ed8">Admin can: list • search • create • edit • delete • view any employee</text>
+
+  <!-- ===================== EMPLOYEE SHELL ===================== -->
+  <text x="788" y="292" text-anchor="middle" font-size="13" font-weight="bold" fill="#047857">EMPLOYEE role</text>
+  <rect x="540" y="300" width="476" height="438" rx="8" fill="#ffffff" stroke="#334155" stroke-width="1.5"/>
+  <!-- topbar -->
+  <rect x="540" y="300" width="476" height="34" rx="8" fill="#0f172a"/>
+  <rect x="540" y="320" width="476" height="14" fill="#0f172a"/>
+  <text x="556" y="322" font-size="11" font-weight="bold" fill="#ffffff">☰  Employee Mgmt</text>
+  <text x="1000" y="322" text-anchor="end" font-size="10" fill="#cbd5e1">John (employee) ▾   Logout</text>
+  <!-- sidebar -->
+  <rect x="540" y="334" width="130" height="404" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <rect x="550" y="346" width="110" height="24" rx="4" fill="#2563eb"/>
+  <text x="560" y="362" font-size="11" font-weight="bold" fill="#ffffff">Dashboard</text>
+  <rect x="550" y="376" width="110" height="24" rx="4" fill="#e2e8f0"/>
+  <text x="560" y="392" font-size="11" fill="#334155">My Profile</text>
+  <!-- hidden Employees item -->
+  <rect x="550" y="406" width="110" height="24" rx="4" fill="#ffffff" stroke="#dc2626" stroke-dasharray="4 3"/>
+  <text x="560" y="422" font-size="10" fill="#dc2626">Employees ✗</text>
+  <rect x="550" y="702" width="110" height="24" rx="4" fill="#fee2e2"/>
+  <text x="560" y="718" font-size="11" fill="#b91c1c">Logout</text>
+  <!-- content: profile / welcome -->
+  <text x="682" y="356" font-size="13" font-weight="bold" fill="#0f172a">Welcome back, John 👋</text>
+  <rect x="682" y="368" width="316" height="150" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="694" y="388" font-size="11" font-weight="bold" fill="#334155">Your Account</text>
+  <line x1="694" y1="396" x2="986" y2="396" stroke="#e2e8f0"/>
+  <text x="694" y="414" font-size="10" fill="#64748b">Name</text><text x="986" y="414" text-anchor="end" font-size="10" fill="#334155">John Smith</text>
+  <text x="694" y="434" font-size="10" fill="#64748b">Email</text><text x="986" y="434" text-anchor="end" font-size="10" fill="#334155">employee@example.com</text>
+  <text x="694" y="454" font-size="10" fill="#64748b">Role</text><text x="986" y="454" text-anchor="end" font-size="10" fill="#334155">employee</text>
+  <rect x="886" y="476" width="100" height="26" rx="4" fill="#2563eb"/>
+  <text x="936" y="493" text-anchor="middle" font-size="10" fill="#ffffff">Edit Profile</text>
+  <!-- blocked note -->
+  <rect x="682" y="532" width="316" height="44" rx="6" fill="#fef2f2" stroke="#fecaca"/>
+  <text x="694" y="550" font-size="10" font-weight="bold" fill="#b91c1c">No employee-management section</text>
+  <text x="694" y="566" font-size="9" fill="#991b1b">Hidden in the menu; the API also returns 403 if accessed directly.</text>
+  <text x="682" y="596" font-size="9" fill="#047857">Employee can: view own profile • edit own name/password</text>
+
+  <!-- footer legend -->
+  <line x1="24" y1="700" x2="1016" y2="700" stroke="#e2e8f0"/>
+  <text x="540" y="720" text-anchor="middle" font-size="10" fill="#64748b">Routes: /login → /dashboard (any role) • /profile (any role) • /employees, /employees/new, /employees/:id (admin only)</text>
+  <text x="540" y="736" text-anchor="middle" font-size="10" fill="#64748b">Unauthenticated → redirect to /login.  Employee hitting an admin route → redirect to /dashboard (and API enforces 403).</text>
+</svg>

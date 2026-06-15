@@ -118,6 +118,8 @@ Server: `http://localhost:5050` · Docs: `http://localhost:5050/api-docs`
 > **5050**. Change it via `PORT` in `.env` if needed.
 
 > **Full endpoint reference with request/response examples:** see [API.md](API.md).
+>
+> **Frontend UI layout & role-based screens (for the React dev):** see [UI_WIREFRAME.md](UI_WIREFRAME.md).
 
 ---
 
